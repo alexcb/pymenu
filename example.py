@@ -14,5 +14,5 @@ def on_enter(selected):
     return True
 menu(x, on_enter)
 
-print foo
+print(foo)
 

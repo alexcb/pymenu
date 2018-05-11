@@ -10,12 +10,12 @@ def menu(items, callback_func, selected = 0):
             sys.stdout.write(t.clear() + t.move(0,0))
             num_rows = t.height - 1
             first_displayed_i = max(min(selected - 5, len(items) - num_rows), 0)
-            for y in xrange(0, num_rows):
+            for y in range(0, num_rows):
                 i = y + first_displayed_i
                 if i == selected:
                     sys.stdout.write(t.reverse)
                 if i < len(items):
-                    print "%d. %s" % (y + first_displayed_i, items[i])
+                    print("%d. %s" % (y + first_displayed_i, items[i]))
                 sys.stdout.write(t.normal)
             with t.cbreak():
                 x = t.inkey()
@@ -38,18 +38,18 @@ def tabmenu(items, selected_tab = 0, selected_items = None):
     with t.fullscreen():
         while True:
             sys.stdout.write(t.clear() + t.move(0,0))
-            print t.bold + items[selected_tab][0] + t.normal
+            print(t.bold + items[selected_tab][0] + t.normal)
 
             tab_items = items[selected_tab][1]
 
             num_rows = t.height - 3
             first_displayed_i = max(min(selected_items[selected_tab] - 5, len(tab_items) - num_rows), 0)
-            for y in xrange(0, num_rows):
+            for y in range(0, num_rows):
                 i = y + first_displayed_i
                 if i == selected_items[selected_tab]:
                     sys.stdout.write(t.reverse)
                 if i < len(tab_items):
-                    print "%d. %s" % (y + first_displayed_i, tab_items[i])
+                    print("%d. %s" % (y + first_displayed_i, tab_items[i]))
                 sys.stdout.write(t.normal)
             with t.cbreak():
                 x = t.inkey()
