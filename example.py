@@ -3,8 +3,8 @@ from pymenu.menu import menu
 # Press left/right to navigate between foo/bar menus
 # up/down between items
 x = [
-    ('foo', [1,2,3,4]),
-    ('bar', ['aa', 'bb', 'cc']),
+    ('abc', 'a',   'fooooooo'),
+    ('zqq', 'qqq', 'bar'     ),
     ]
 
 foo = None

@@ -1,8 +1,31 @@
 from blessed import Terminal
 import sys
 
+def format_cols(rows, total_width):
+    if not rows:
+        return rows
+
+    cols = max(len(r) for r in rows)
+    if cols != min(len(r) for r in rows):
+        raise ValueError("not all rows have the same number of columns")
+
+    widths = [
+        max(len(r[i]) for r in rows)
+        for i in range(cols)
+        ]
+
+    rows = [
+        [x.ljust(w) for (x, w) in zip(row, widths)]
+        for row in rows]
+
+    rows = [' '.join(row) for row in rows]
+
+    return rows
+
 def menu(items, callback_func, selected = 0):
     t = Terminal()
+
+    items = format_cols(items, t.width)
 
     func = None
     with t.fullscreen():
@@ -15,7 +38,7 @@ def menu(items, callback_func, selected = 0):
                 if i == selected:
                     sys.stdout.write(t.reverse)
                 if i < len(items):
-                    print("%d. %s" % (y + first_displayed_i, items[i]))
+                    print(items[i])
                 sys.stdout.write(t.normal)
             with t.cbreak():
                 x = t.inkey()
