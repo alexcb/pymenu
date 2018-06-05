@@ -51,4 +51,4 @@ class TableWidget(object):
                 self.selected_i += 1
         elif key == '\n':
             if self.callback:
-                self.callback(self.items[self.selected_i])
+                self.callback(self.selected_i)
