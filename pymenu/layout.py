@@ -23,38 +23,68 @@ def _get_loc(percentages, height):
 
 
 
-kk = None
-def _run(stdscr, widgets):
-    window_move = False
-    selected_i = 0
+def _run(stdscr, widget):
     while True:
         stdscr.clear()
+        height, width = stdscr.getmaxyx()
+        widget.draw(stdscr, True, 0, 0, width, height)
+        display = widget.cursor_loc(stdscr, 0, 0, width, height)
+        if display:
+            curses.curs_set(2)
+        else:
+            curses.curs_set(0)
+        stdscr.refresh()
+        widget.key(stdscr.getkey())
 
+
+def run(widget):
+    curses.wrapper(_run, widget)
+
+
+class LayoutWidget(object):
+    def __init__(self, widgets):
+        self.widgets = widgets
+        self.window_move = False
+        self.selected_i = 0
+        self.selected_widget = None
+        self.selected_args = None
+
+    def draw(self, stdscr, is_selected, x, y, width, height):
         height, width = stdscr.getmaxyx()
 
-        heights = _get_loc((x[0] for x in widgets), height)
+        self.selected_widget = None
+        self.selected_args = None
+
+        heights = _get_loc((x[0] for x in self.widgets), height)
         y = 0
-        for i, (h, widget) in enumerate(zip(heights, (x[1] for x in widgets))):
-            selected = bool(i == selected_i)
+        for i, (h, widget) in enumerate(zip(heights, (x[1] for x in self.widgets))):
+            selected = bool(i == self.selected_i)
             widget.draw(stdscr, selected, 0, y, width, h)
+            if selected:
+                self.selected_widget = widget
+                self.selected_args = (0, y, width, h)
             y += h
 
-        stdscr.refresh()
-        k = stdscr.getkey()
-        if window_move:
-            if k in ('KEY_UP', 'k'):
-                if selected_i > 0:
-                    selected_i -= 1
-            elif k in ('KEY_DOWN', 'j'):
-                if selected_i < (len(widgets)-1):
-                    selected_i += 1
-            window_move = False
+
+    def cursor_loc(self, stdscr, x, y, width, height):
+        if self.selected_widget:
+            return self.selected_widget.cursor_loc(stdscr, *self.selected_args)
+        return False
+
+    def key(self, key):
+        if self.window_move:
+            if key in ('KEY_UP', 'k'):
+                if self.selected_i > 0:
+                    self.selected_i -= 1
+            elif key in ('KEY_DOWN', 'j'):
+                if self.selected_i < (len(self.widgets)-1):
+                    self.selected_i += 1
+            self.window_move = False
+            return True
+
+        if key == '\x17':
+            self.window_move = True
         else:
-            if k == '\x17':
-                window_move = True
-            else:
-                widgets[selected_i][1].key(k)
+            self.widgets[self.selected_i][1].key(key)
 
-def run(widgets):
-    curses.wrapper(_run, widgets)
-
+        return True

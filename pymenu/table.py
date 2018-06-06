@@ -42,6 +42,9 @@ class TableWidget(object):
                 style |= curses.A_REVERSE
             stdscr.addstr(y+i, x, items[ii], style)
 
+    def cursor_loc(self, stdscr, x, y, width, height):
+        pass
+
     def key(self, key):
         if key in ('k', 'KEY_UP'):
             if self.selected_i > 0:
