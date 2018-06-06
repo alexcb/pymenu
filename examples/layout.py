@@ -21,7 +21,9 @@ table1 = pymenu.table.TableWidget([
     (str(x), str(x*x), str(x*x*x)) for x in range(100)
     ], cb)
 
-pymenu.layout.run((
+widget = pymenu.layout.LayoutWidget((
     ('10%', table1),
     ('90%', widget('bottom')),
     ))
+
+pymenu.layout.run(widget)
