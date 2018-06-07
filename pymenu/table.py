@@ -1,6 +1,9 @@
 import curses
 
 def _pad_cols(rows, width):
+    if not rows:
+        return []
+
     num_cols = max(len(x) for x in rows)
     assert num_cols == min(len(x) for x in rows)
 
@@ -31,6 +34,9 @@ class TableWidget(object):
             self.first_displayed = self.selected_i - height + 1
 
     def draw(self, stdscr, is_selected, x, y, width, height):
+        if not self.items:
+            stdscr.addstr(y, x, '<no data>')
+
         items = _pad_cols(self.items, width)
         self._fix_first_displayed(height)
         for i in range(height):

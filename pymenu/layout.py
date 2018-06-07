@@ -24,6 +24,7 @@ def _get_loc(percentages, height):
 
 
 def _run(stdscr, widget):
+    curses.halfdelay(2)
     while True:
         stdscr.clear()
         height, width = stdscr.getmaxyx()
@@ -34,7 +35,14 @@ def _run(stdscr, widget):
         else:
             curses.curs_set(0)
         stdscr.refresh()
-        widget.key(stdscr.getkey())
+        try:
+            k = stdscr.getkey()
+        except KeyboardInterrupt:
+            raise
+        except:
+            pass
+        else:
+            widget.key(k)
 
 
 def run(widget):
