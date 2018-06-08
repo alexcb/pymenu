@@ -18,7 +18,7 @@ class DialogWidget(object):
             self.dialog = True
             return True
 
-        if key == '\x1b':
+        if self.dialog and key == '\x1b':
             self.dialog = False
             return True
 
