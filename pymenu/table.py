@@ -93,6 +93,7 @@ class TableWidget(object):
                 self._set_visible_items()
                 return
             if key == '\x1b':
+                self.search_active = False
                 self.search_text = ''
                 self._set_visible_items()
                 return
