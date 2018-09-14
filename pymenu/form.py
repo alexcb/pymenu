@@ -12,6 +12,12 @@ class FormWidget(object):
                 field['name'] = field['label']
             if 'value' not in field:
                 field['value'] = ''
+            if 'choices' in field:
+                field['selected'] = 0
+                field['type'] = 'choice'
+            else:
+                field['type'] = 'text'
+
 
             # required keys:
             field['label']
@@ -33,8 +39,13 @@ class FormWidget(object):
 
         for i, field in enumerate(self.fields):
             stdscr.addstr(y+yy, x, field['label'])
-            text = field['value']
-            stdscr.addstr(y+yy, x+self.label_width+1, text)
+            if field['type'] == 'choice':
+                style = curses.A_REVERSE if i == self.selected_i else 0
+                text = field['choices'][field['selected']]
+                stdscr.addstr(y+yy, x+self.label_width+1, text, style)
+            else:
+                text = field['value']
+                stdscr.addstr(y+yy, x+self.label_width+1, text)
             if i == self.selected_i:
                 self.cursor_loc_x = self.label_width+1+len(text)
                 self.cursor_loc_y = yy
@@ -50,8 +61,19 @@ class FormWidget(object):
         if self.selected_i == len(self.fields):
             # button is selected
             return False
-        stdscr.addstr(y + self.cursor_loc_y, x + self.cursor_loc_x, '')
-        return True
+        if self.fields[self.selected_i]['type'] == 'text':
+            stdscr.addstr(y + self.cursor_loc_y, x + self.cursor_loc_x, '')
+            return True
+        return False
+
+    def get_vals(self):
+        vals = {}
+        for field in self.fields:
+            if field['type'] == 'text':
+                vals[field['name']] = field['value']
+            elif field['type'] == 'choice':
+                vals[field['name']] = field['choices'][field['selected']]
+        return vals
 
     def key(self, key):
         if key in ('KEY_UP',):
@@ -72,20 +94,29 @@ class FormWidget(object):
 
         if self.selected_i == len(self.fields):
             if key == '\n':
-                self.on_enter({x['name']: x['value'] for x in self.fields})
+                self.on_enter(self.get_vals())
             return True
 
         field = self.fields[self.selected_i]
-        if key == 'KEY_BACKSPACE':
-            field['value'] = field['value'][:-1]
-            return True
+        if field['type'] == 'text':
+            if key == 'KEY_BACKSPACE':
+                field['value'] = field['value'][:-1]
+                return True
 
-        if key in ('\t', '\n'):
-            return True
+            if key in ('\t', '\n'):
+                return True
 
-        if key in string.printable:
-            field['value'] = field['value'] + key
-            return True
+            if key in string.printable:
+                field['value'] = field['value'] + key
+                return True
+        elif field['type'] == 'choice':
+            n = len(field['choices'])
+            if key in ('\n', 'KEY_RIGHT'):
+                field['selected'] = (field['selected']+1) % n
+                return True
+            if key == 'KEY_LEFT':
+                field['selected'] = (field['selected']-1) % n
+                return True
 
         return True
 
