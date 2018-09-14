@@ -13,7 +13,8 @@ class FormWidget(object):
             if 'value' not in field:
                 field['value'] = ''
             if 'choices' in field:
-                field['selected'] = 0
+                if 'selected' not in field:
+                    field['selected'] = 0
                 field['type'] = 'choice'
             else:
                 field['type'] = 'text'
